@@ -2,7 +2,7 @@ numpy
 Pillow
 aiohttp
 hachoir
-pyrogam==1.4.16
+pyrogam==1.4.8
 requests
 tgcrypto
 feedparser
