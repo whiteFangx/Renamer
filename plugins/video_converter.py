@@ -32,8 +32,7 @@ from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 @Clinton.on_message(filters.command(["convert"]))
 async def convert(bot, update):
 
-    update_channel = Config.UPDATE_CHANNEL
-    if update_channel:
+    if update_channel := Config.UPDATE_CHANNEL:
         try:
             user = await bot.get_chat_member(update_channel, update.chat.id)
             if user.status == "kicked":
@@ -52,7 +51,7 @@ async def convert(bot, update):
 
     if update.reply_to_message is not None:
         description = Scripted.CUSTOM_CAPTION
-        download_location = Config.DOWNLOAD_LOCATION + "/"
+        download_location = f"{Config.DOWNLOAD_LOCATION}/"
         c = await bot.send_message(
             chat_id=update.chat.id,
             text=Scripted.TRYING_TO_DOWNLOAD,
@@ -76,13 +75,9 @@ async def convert(bot, update):
                 message_id=c.message_id
             )
             logger.info(the_real_download_location)
-            width = 0
-            height = 0
-            duration = 0
             metadata = extractMetadata(createParser(the_real_download_location))
-            if metadata.has("duration"):
-                duration = metadata.get('duration').seconds
-            thumb_image_path = Config.DOWNLOAD_LOCATION + "/" + str(update.from_user.id) + ".jpg"
+            duration = metadata.get('duration').seconds if metadata.has("duration") else 0
+            thumb_image_path = f"{Config.DOWNLOAD_LOCATION}/{str(update.from_user.id)}.jpg"
             if not os.path.exists(thumb_image_path):
                 thumb_image_path = await take_screen_shot(
                     the_real_download_location,
@@ -94,10 +89,8 @@ async def convert(bot, update):
                 )
             logger.info(thumb_image_path)
             metadata = extractMetadata(createParser(thumb_image_path))
-            if metadata.has("width"):
-                width = metadata.get("width")
-            if metadata.has("height"):
-                height = metadata.get("height")
+            width = metadata.get("width") if metadata.has("width") else 0
+            height = metadata.get("height") if metadata.has("height") else 0
             Image.open(thumb_image_path).convert("RGB").save(thumb_image_path)
             img = Image.open(thumb_image_path)
             img.resize((90, height))
@@ -129,7 +122,7 @@ async def convert(bot, update):
                   chat_id=update.chat.id,
                   message_id=c.message_id
             )
-            
+
     else:
         await bot.send_message(
             chat_id=update.chat.id,

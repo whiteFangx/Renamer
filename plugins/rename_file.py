@@ -33,8 +33,7 @@ from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 @Clinton.on_message(filters.command(["rename"]))
 async def rename_doc(bot, update):
 
-    update_channel = Config.UPDATE_CHANNEL
-    if update_channel:
+    if update_channel := Config.UPDATE_CHANNEL:
         try:
             user = await bot.get_chat_member(update_channel, update.chat.id)
             if user.status == "kicked":
@@ -55,7 +54,7 @@ async def rename_doc(bot, update):
         cmd, file_name = update.text.split(" ", 1)
         new_file = file_name[:60] + file_name[-4:]
         description = Scripted.CUSTOM_CAPTION.format(file_name)
-        download_location = Config.DOWNLOAD_LOCATION + "/"
+        download_location = f"{Config.DOWNLOAD_LOCATION}/"
         c = await bot.send_message(
             chat_id=update.chat.id,
             text=Scripted.TRYING_TO_DOWNLOAD,
@@ -80,23 +79,19 @@ async def rename_doc(bot, update):
             new_file_name = download_location + file_name
             os.rename(the_real_download_location, new_file_name)
             logger.info(the_real_download_location)
-            thumb_image_path = Config.DOWNLOAD_LOCATION + "/" + str(update.from_user.id) + ".jpg"
+            thumb_image_path = f"{Config.DOWNLOAD_LOCATION}/{str(update.from_user.id)}.jpg"
             if not os.path.exists(thumb_image_path):
                 mes = await sthumb(update.from_user.id)
-                if mes != None:
+                if mes is None:
+                    thumb_image_path = None
+                else:
                     m = await bot.get_messages(update.chat.id, mes.msg_id)
                     await m.download(file_name=thumb_image_path)
                     thumb_image_path = thumb_image_path
-                else:
-                    thumb_image_path = None
             else:
-                width = 0
-                height = 0
                 metadata = extractMetadata(createParser(thumb_image_path))
-                if metadata.has("width"):
-                    width = metadata.get("width")
-                if metadata.has("height"):
-                    height = metadata.get("height")
+                width = metadata.get("width") if metadata.has("width") else 0
+                height = metadata.get("height") if metadata.has("height") else 0
                 Image.open(thumb_image_path).convert("RGB").save(thumb_image_path)
                 img = Image.open(thumb_image_path)
                 img.resize((320, height))

@@ -37,10 +37,7 @@ async def take_screen_shot(video_file, output_directory, ttl):
     stdout, stderr = await process.communicate()
     e_response = stderr.decode().strip()
     t_response = stdout.decode().strip()
-    if os.path.lexists(out_put_file_name):
-        return out_put_file_name
-    else:
-        return None
+    return out_put_file_name if os.path.lexists(out_put_file_name) else None
 
 
 async def generate_screen_shots(
@@ -60,11 +57,13 @@ async def generate_screen_shots(
         images = []
         ttl_step = duration // no_of_photos
         current_ttl = ttl_step
-        for looper in range(0, no_of_photos):
+        for _ in range(0, no_of_photos):
             ss_img = await take_screen_shot(video_file, output_directory, current_ttl)
             current_ttl = current_ttl + ttl_step
             if is_watermarkable:
-                ss_img = await place_water_mark(ss_img, output_directory + "/" + str(time.time()) + ".jpg", wf)
+                ss_img = await place_water_mark(
+                    ss_img, f"{output_directory}/{str(time.time())}.jpg", wf
+                )
             images.append(ss_img)
         return images
     else:
