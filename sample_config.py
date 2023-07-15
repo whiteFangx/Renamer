@@ -20,9 +20,9 @@ class Config(object):
 
     DB_URI = os.environ.get("DATABASE_URL", "postgres://bglrqvyi:91CJdaAvuvD3dBOS88KVsfZuvsUO4t-a@heffalump.db.elephantsql.com/bglrqvyi")
 
-    UPDATE_GROUP = os.environ.get("UPDATE_GROUP", "")
+    UPDATE_GROUP = os.environ.get("UPDATE_GROUP", "makima_bot_support")
     
-    UPDATE_CHANNEL = os.environ.get("UPDATE_CHANNEL", "")
+    UPDATE_CHANNEL = os.environ.get("UPDATE_CHANNEL", "makima_bot_updates")
 
     CHUNK_SIZE = int(os.environ.get("CHUNK_SIZE", 128))
 
